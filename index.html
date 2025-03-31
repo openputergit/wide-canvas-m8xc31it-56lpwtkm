@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neubrutalism Bakery Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Neubrutalism Theme */
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #ffde59;
+        }
+        
+        .neu-box {
+            background-color: white;
+            border: 3px solid black;
+            box-shadow: 5px 5px 0px black;
+            transition: all 0.2s ease;
+        }
+        
+        .neu-box:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0px black;
+        }
+        
+        .neu-input {
+            border: 3px solid black;
+            background-color: #ffffff;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+        
+        .neu-input:focus {
+            outline: none;
+            background-color: #f0f0f0;
+            box-shadow: inset 2px 2px 0px rgba(0,0,0,0.2);
+        }
+        
+        .neu-select {
+            border: 3px solid black;
+            background-color: #ffffff;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='24px' height='24px'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+        
+        .neu-btn {
+            background-color: #ff6b6b;
+            color: black;
+            font-weight: 700;
+            border: 3px solid black;
+            box-shadow: 5px 5px 0px black;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .neu-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0px black;
+        }
+        
+        .neu-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0px black;
+        }
+        
+        .neu-btn-blue {
+            background-color: #4cc9f0;
+        }
+        
+        .neu-btn-green {
+            background-color: #67e8b3;
+        }
+        
+        /* Table Styles */
+        .neu-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+        }
+        
+        .neu-table th, .neu-table td {
+            border: 2px solid black;
+            padding: 12px;
+        }
+        
+        .neu-table th {
+            background-color: #ffde59;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .neu-table tr:nth-child(even) td {
+            background-color: #f5f5f5;
+        }
+        
+        .neu-table tr:nth-child(odd) td {
+            background-color: white;
+        }
+
+        /* Dashboard stats */
+        .stat-card {
+            border: 3px solid black;
+            background-color: white;
+            box-shadow: 5px 5px 0px black;
+            transition: all 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0px black;
+        }
+
+        /* Forms */
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+        }
+        
+        /* Menu */
+        .side-menu {
+            background-color: white;
+            border-right: 3px solid black;
+            height: 100vh;
+        }
+        
+        .menu-item {
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 2px solid black;
+            transition: all 0.2s ease;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: #ffde59;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="grid grid-cols-12 min-h-screen">
+        <!-- Side Menu -->
+        <div class="col-span-2 side-menu">
+            <div class="p-4 border-b-3 border-black bg-[#ff6b6b] text-center">
+                <h2 class="text-2xl font-bold">Bakery Management</h2>
+            </div>
+            
+            <div class="menu-item active" data-section="dashboard">
+                <i class="bi bi-speedometer2 mr-2"></i> Dashboard
+            </div>
+            <div class="menu-item" data-section="products">
+                <i class="bi bi-cake2 mr-2"></i> Products
+            </div>
+            <div class="menu-item" data-section="inventory">
+                <i class="bi bi-box-seam mr-2"></i> Inventory
+            </div>
+            <div class="menu-item" data-section="orders">
+                <i class="bi bi-cart-check mr-2"></i> Orders
+            </div>
+            <div class="menu-item" data-section="customers">
+                <i class="bi bi-people mr-2"></i> Customers
+            </div>
+            <div class="menu-item" data-section="sales">
+                <i class="bi bi-graph-up mr-2"></i> Sales
+            </div>
+            <div class="menu-item" data-section="settings">
+                <i class="bi bi-gear mr-2"></i> Settings
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-span-10 p-8 overflow-y-auto">
+            <!-- Dashboard View -->
+            <div class="form-section active" id="dashboard">
+                <h1 class="text-4xl font-bold mb-8">Dashboard</h1>
+                
+                <div class="grid grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card p-6">
+                        <h3 class="text-lg font-semibold mb-2">Total Revenue</h3>
+                        <p class="text-3xl font-bold">$8,459</p>
+                        <p class="text-sm mt-2 text-green-600"><i class="bi bi-arrow-up"></i> 12% from last month</p>
+                    </div>
+                    
+                    <div class="stat-card p-6">
+                        <h3 class="text-lg font-semibold mb-2">Orders</h3>
+                        <p class="text-3xl font-bold">254</p>
+                        <p class="text-sm mt-2 text-green-600"><i class="bi bi-arrow-up"></i> 5% from last month</p>
+                    </div>
+                    
+                    <div class="stat-card p-6">
+                        <h3 class="text-lg font-semibold mb-2">Products Sold</h3>
+                        <p class="text-3xl font-bold">1,253</p>
+                        <p class="text-sm mt-2 text-green-600"><i class="bi bi-arrow-up"></i> 8% from last month</p>
+                    </div>
+                    
+                    <div class="stat-card p-6">
+                        <h3 class="text-lg font-semibold mb-2">Low Stock Items</h3>
+                        <p class="text-3xl font-bold">12</p>
+                        <p class="text-sm mt-2 text-red-600"><i class="bi bi-arrow-up"></i> 3 more than last week</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="neu-box p-6">
+                        <h3 class="text-xl font-bold mb-4">Recent Orders</h3>
+                        <table class="neu-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#ORD-2345</td>
+                                    <td>John Smith</td>
+                                    <td>5</td>
+                                    <td>$78.50</td>
+                                    <td>Completed</td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-2344</td>
+                                    <td>Emma Wilson</td>
+                                    <td>2</td>
+                                    <td>$35.00</td>
+                                    <td>Processing</td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-2343</td>
+                                    <td>Mike Johnson</td>
+                                    <td>8</td>
+                                    <td>$120.75</td>
+                                    <td>Completed</td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-2342</td>
+                                    <td>Sarah Davis</td>
+                                    <td>3</td>
+                                    <td>$45.25</td>
+                                    <td>Completed</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-4 text-center">
+                            <button class="neu-btn px-4 py-2">View All Orders</button>
+                        </div>
+                    </div>
+                    
+                    <div class="neu-box p-6">
+                        <h3 class="text-xl font-bold mb-4">Top Selling Products</h3>
+                        <table class="neu-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Units Sold</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Chocolate Croissant</td>
+                                    <td>Pastries</td>
+                                    <td>$4.50</td>
+                                    <td>235</td>
+                                </tr>
+                                <tr>
+                                    <td>Sourdough Bread</td>
+                                    <td>Bread</td>
+                                    <td>$6.75</td>
+                                    <td>189</td>
+                                </tr>
+                                <tr>
+                                    <td>Vanilla Cupcake</td>
+                                    <td>Desserts</td>
+                                    <td>$3.25</td>
+                                    <td>157</td>
+                                </tr>
+                                <tr>
+                                    <td>Cheese Danish</td>
+                                    <td>Pastries</td>
+                                    <td>$4.25</td>
+                                    <td>142</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-4 text-center">
+                            <button class="neu-btn px-4 py-2">View All Products</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Products View -->
+            <div class="form-section" id="products">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-4xl font-bold">Products</h1>
+                    <button class="neu-btn px-6 py-3" id="addProductBtn">
+                        <i class="bi bi-plus-lg mr-2"></i>Add New Product
+                    </button>
+                </div>
+                
+                <div class="neu-box p-6 mb-8" id="addProductForm" style="display: none;">
+                    <h2 class="text-2xl font-bold mb-4">Add New Product</h2>
+                    <form id="productForm" class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-lg font-semibold mb-2">Product Name</label>
+                            <input type="text" class="neu-input w-full" placeholder="Enter product name">
+                        </div>
+                        <div>
+                            <label class="block text-lg font-semibold mb-2">Category</label>
+                            <select class="neu-select w-full">
+                                <option value="">Select Category</option>
+                                <option value="bread">Bread</option>
+                                <option value="pastries">Pastries</option>
+                                <option value="cakes">Cakes</option>
+                                <option value="desserts">Desserts</option>
+                                <option value="cookies">Cookies</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-lg font-semibold mb-2">Price</label>
+                            <input type="number" class="neu-input w-full" placeholder="0.00" step="0.01">
+                        </div>
+                        <div>
+                            <label class="block text-lg font-semibold mb-2">Cost</label>
+                            <input type="number" class="neu-input w-full" placeholder="0.00" step="0.01">
+                        </div>
+                        <div>
+                            <label class="block text-lg font-semibold mb-2">Quantity</label>
+                            <input type="number" class="neu-input w-full" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-lg font-semibold mb-2">Status</label>
+                            <select class="neu-select w-full">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="seasonal">Seasonal</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-lg font-semibold mb-2">Description</label>
+                            <textarea class="neu-input w-full" rows="3" placeholder="Enter product description"></textarea>
+                        </div>
+                        <div class="col-span-2 flex justify-end gap-4">
+                            <button type="button" class="neu-btn bg-gray-300 px-6 py-3" id="cancelAddProduct">Cancel</button>
+                            <button type="submit" class="neu-btn neu-btn-green px-6 py-3">Save Product</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="neu-box p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex gap-4">
+                            <input type="text" class="neu-input" placeholder="Search products...">
+                            <select class="neu-select">
+                                <option value="">All Categories</option>
+                                <option value="bread">Bread</option>
+                                <option value="pastries">Pastries</option>
+                                <option value="cakes">Cakes</option>
+                                <option value="desserts">Desserts</option>
+                                <option value="cookies">Cookies</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select class="neu-select">
+                                <option value="newest">Newest</option>
+                                <option value="oldest">Oldest</option>
+                                <option value="price_high">Price: High to Low</option>
+                                <option value="price_low">Price: Low to High</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <table class="neu-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>P001</td>
+                                <td>Chocolate Croissant</td>
+                                <td>Pastries</td>
+                                <td>$4.50</td>
+                                <td>45</td>
+                                <td>Active</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">Edit</button>
+                                        <button class="neu-btn px-2 py-1 bg-red-300">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P002</td>
+                                <td>Sourdough Bread</td>
+                                <td>Bread</td>
+                                <td>$6.75</td>
+                                <td>28</td>
+                                <td>Active</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">Edit</button>
+                                        <button class="neu-btn px-2 py-1 bg-red-300">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P003</td>
+                                <td>Vanilla Cupcake</td>
+                                <td>Desserts</td>
+                                <td>$3.25</td>
+                                <td>62</td>
+                                <td>Active</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">Edit</button>
+                                        <button class="neu-btn px-2 py-1 bg-red-300">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P004</td>
+                                <td>Cheese Danish</td>
+                                <td>Pastries</td>
+                                <td>$4.25</td>
+                                <td>18</td>
+                                <td>Active</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">Edit</button>
+                                        <button class="neu-btn px-2 py-1 bg-red-300">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P005</td>
+                                <td>Baguette</td>
+                                <td>Bread</td>
+                                <td>$3.95</td>
+                                <td>32</td>
+                                <td>Active</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">Edit</button>
+                                        <button class="neu-btn px-2 py-1 bg-red-300">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="flex justify-center mt-6">
+                        <div class="flex gap-2">
+                            <button class="neu-btn px-4 py-2 bg-gray-200">Previous</button>
+                            <button class="neu-btn px-4 py-2 bg-yellow-300">1</button>
+                            <button class="neu-btn px-4 py-2 bg-white">2</button>
+                            <button class="neu-btn px-4 py-2 bg-white">3</button>
+                            <button class="neu-btn px-4 py-2 bg-gray-200">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Inventory View -->
+            <div class="form-section" id="inventory">
+                <h1 class="text-4xl font-bold mb-8">Inventory Management</h1>
+                
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <div class="stat-card p-6 bg-white">
+                        <h3 class="text-lg font-semibold mb-2">Total Inventory Value</h3>
+                        <p class="text-3xl font-bold">$12,567.50</p>
+                    </div>
+                    
+                    <div class="stat-card p-6 bg-white">
+                        <h3 class="text-lg font-semibold mb-2">Low Stock Items</h3>
+                        <p class="text-3xl font-bold">12</p>
+                    </div>
+                    
+                    <div class="stat-card p-6 bg-white">
+                        <h3 class="text-lg font-semibold mb-2">Out of Stock Items</h3>
+                        <p class="text-3xl font-bold">3</p>
+                    </div>
+                </div>
+                
+                <div class="neu-box p-6 mb-8">
+                    <h2 class="text-2xl font-bold mb-4">Inventory Adjustments</h2>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-lg font-semibold mb-2">Product</label>
+                            <select class="neu-select w-full">
+                                <option value="">Select Product</option>
+                                <option value="p001">Chocolate Croissant</option>
+                                <option value="p002">Sourdough Bread</option>
+                                <option value="p003">Vanilla Cupcake</option>
+                                <option value="p004">Cheese Danish</option>
+                                <option value="p005">Baguette</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-lg font-semibold mb-2">Adjustment Type</label>
+                            <select class="neu-select w-full">
+                                <option value="add">Add Stock</option>
+                                <option value="remove">Remove Stock</option>
+                                <option value="waste">Waste/Spoilage</option>
+                                <option value="adjustment">Count Adjustment</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-lg font-semibold mb-2">Quantity</label>
+                            <input type="number" class="neu-input w-full" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-lg font-semibold mb-2">Reason</label>
+                            <input type="text" class="neu-input w-full" placeholder="Enter reason for adjustment">
+                        </div>
+                        <div class="col-span-2 text-right">
+                            <button class="neu-btn neu-btn-green px-6 py-3">Save Adjustment</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Inventory List -->
+                <div class="neu-box p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold">Inventory Items</h2>
+                        <div class="flex gap-4">
+                            <input type="text" class="neu-input" placeholder="Search inventory...">
+                            <select class="neu-select">
+                                <option value="all">All Items</option>
+                                <option value="low">Low Stock</option>
+                                <option value="out">Out of Stock</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <table class="neu-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Current Stock</th>
+                                <th>Min Stock</th>
+                                <th>Value</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>P001</td>
+                                <td>Chocolate Croissant</td>
+                                <td>Pastries</td>
+                                <td>45</td>
+                                <td>20</td>
+                                <td>$202.50</td>
+                                <td>OK</td>
+                                <td>
+                                    <button class="neu-btn px-2 py-1 bg-blue-300">Adjust</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P002</td>
+                                <td>Sourdough Bread</td>
+                                <td>Bread</td>
+                                <td>12</td>
+                                <td>15</td>
+                                <td>$81.00</td>
+                                <td class="text-orange-600 font-bold">LOW</td>
+                                <td>
+                                    <button class="neu-btn px-2 py-1 bg-blue-300">Adjust</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P003</td>
+                                <td>Vanilla Cupcake</td>
+                                <td>Desserts</td>
+                                <td>62</td>
+                                <td>30</td>
+                                <td>$201.50</td>
+                                <td>OK</td>
+                                <td>
+                                    <button class="neu-btn px-2 py-1 bg-blue-300">Adjust</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P004</td>
+                                <td>Cheese Danish</td>
+                                <td>Pastries</td>
+                                <td>0</td>
+                                <td>15</td>
+                                <td>$0.00</td>
+                                <td class="text-red-600 font-bold">OUT</td>
+                                <td>
+                                    <button class="neu-btn px-2 py-1 bg-blue-300">Adjust</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P005</td>
+                                <td>Baguette</td>
+                                <td>Bread</td>
+                                <td>8</td>
+                                <td>10</td>
+                                <td>$31.60</td>
+                                <td class="text-orange-600 font-bold">LOW</td>
+                                <td>
+                                    <button class="neu-btn px-2 py-1 bg-blue-300">Adjust</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="flex justify-center mt-6">
+                        <div class="flex gap-2">
+                            <button class="neu-btn px-4 py-2 bg-gray-200">Previous</button>
+                            <button class="neu-btn px-4 py-2 bg-yellow-300">1</button>
+                            <button class="neu-btn px-4 py-2 bg-white">2</button>
+                            <button class="neu-btn px-4 py-2 bg-white">3</button>
+                            <button class="neu-btn px-4 py-2 bg-gray-200">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Orders View -->
+            <div class="form-section" id="orders">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-4xl font-bold">Orders</h1>
+                    <button class="neu-btn px-6 py-3">
+                        <i class="bi bi-plus-lg mr-2"></i>New Order
+                    </button>
+                </div>
+                
+                <div class="neu-box p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex gap-4">
+                            <input type="text" class="neu-input" placeholder="Search orders...">
+                            <select class="neu-select">
+                                <option value="all">All Orders</option>
+                                <option value="completed">Completed</option>
+                                <option value="processing">Processing</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select class="neu-select">
+                                <option value="newest">Newest</option>
+                                <option value="oldest">Oldest</option>
+                                <option value="amount_high">Amount: High to Low</option>
+                                <option value="amount_low">Amount: Low to High</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <table class="neu-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#ORD-2345</td>
+                                <td>John Smith</td>
+                                <td>2023-05-15</td>
+                                <td>5</td>
+                                <td>$78.50</td>
+                                <td>Completed</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">View</button>
+                                        <button class="neu-btn px-2 py-1 bg-gray-300">Receipt</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-2344</td>
+                                <td>Emma Wilson</td>
+                                <td>2023-05-15</td>
+                                <td>2</td>
+                                <td>$35.00</td>
+                                <td>Processing</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">View</button>
+                                        <button class="neu-btn px-2 py-1 bg-yellow-300">Complete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-2343</td>
+                                <td>Mike Johnson</td>
+                                <td>2023-05-14</td>
+                                <td>8</td>
+                                <td>$120.75</td>
+                                <td>Completed</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">View</button>
+                                        <button class="neu-btn px-2 py-1 bg-gray-300">Receipt</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-2342</td>
+                                <td>Sarah Davis</td>
+                                <td>2023-05-14</td>
+                                <td>3</td>
+                                <td>$45.25</td>
+                                <td>Completed</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">View</button>
+                                        <button class="neu-btn px-2 py-1 bg-gray-300">Receipt</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-2341</td>
+                                <td>Robert Brown</td>
+                                <td>2023-05-13</td>
+                                <td>1</td>
+                                <td>$25.00</td>
+                                <td>Cancelled</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">View</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="flex justify-center mt-6">
+                        <div class="flex gap-2">
+                            <button class="neu-btn px-4 py-2 bg-gray-200">Previous</button>
+                            <button class="neu-btn px-4 py-2 bg-yellow-300">1</button>
+                            <button class="neu-btn px-4 py-2 bg-white">2</button>
+                            <button class="neu-btn px-4 py-2 bg-white">3</button>
+                            <button class="neu-btn px-4 py-2 bg-gray-200">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Customers View -->
+            <div class="form-section" id="customers">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-4xl font-bold">Customers</h1>
+                    <button class="neu-btn px-6 py-3">
+                        <i class="bi bi-plus-lg mr-2"></i>Add Customer
+                    </button>
+                </div>
+                
+                <div class="neu-box p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <input type="text" class="neu-input" placeholder="Search customers...">
+                        <div>
+                            <select class="neu-select">
+                                <option value="newest">Newest</option>
+                                <option value="oldest">Oldest</option>
+                                <option value="name_asc">Name: A-Z</option>
+                                <option value="name_desc">Name: Z-A</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <table class="neu-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Orders</th>
+                                <th>Total Spent</th>
+                                <th>Last Order</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>C001</td>
+                                <td>John Smith</td>
+                                <td>john.smith@example.com</td>
+                                <td>555-123-4567</td>
+                                <td>8</td>
+                                <td>$245.75</td>
+                                <td>2023-05-15</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">Edit</button>
+                                        <button class="neu-btn px-2 py-1 bg-green-300">Orders</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>C002</td>
+                                <td>Emma Wilson</td>
+                                <td>emma.w@example.com</td>
+                                <td>555-987-6543</td>
+                                <td>3</td>
+                                <td>$85.50</td>
+                                <td>2023-05-15</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">Edit</button>
+                                        <button class="neu-btn px-2 py-1 bg-green-300">Orders</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>C003</td>
+                                <td>Mike Johnson</td>
+                                <td>mike.j@example.com</td>
+                                <td>555-456-7890</td>
+                                <td>12</td>
+                                <td>$437.25</td>
+                                <td>2023-05-14</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">Edit</button>
+                                        <button class="neu-btn px-2 py-1 bg-green-300">Orders</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>C004</td>
+                                <td>Sarah Davis</td>
+                                <td>sarah.d@example.com</td>
+                                <td>555-234-5678</td>
+                                <td>5</td>
+                                <td>$168.75</td>
+                                <td>2023-05-14</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">Edit</button>
+                                        <button class="neu-btn px-2 py-1 bg-green-300">Orders</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>C005</td>
+                                <td>Robert Brown</td>
+                                <td>robert.b@example.com</td>
+                                <td>555-345-6789</td>
+                                <td>2</td>
+                                <td>$52.50</td>
+                                <td>2023-05-13</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="neu-btn px-2 py-1 bg-blue-300">Edit</button>
+                                        <button class="neu-btn px-2 py-1 bg-green-300">Orders</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="flex justify-center mt-6">
+                        <div class="flex gap-2">
+                            <button class="neu-btn px-4 py-2 bg-gray-200">Previous</button>
+                            <button class="neu-btn px-4 py-2 bg-yellow-300">1</button>
+                            <button class="neu-btn px-4 py-2 bg-white">2</button>
+                            <button class="neu-btn px-4 py-2 bg-gray-200">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sales View -->
+            <div class="form-section" id="sales">
+                <h1 class="text-4xl font-bold mb-8">Sales Reports</h1>
+                
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <div class="stat-card p-6 bg-white">
+                        <h3 class="text-lg font-semibold mb-2">Total Revenue (MTD)</h3>
+                        <p class="text-3xl font-bold">$8,459.25</p>
+                        <p class="text-sm mt-2 text-green-600"><i class="bi bi-arrow-up"></i> 12% from last month</p>
+                    </div>
+                    
+                    <div class="stat-card p-6 bg-white">
+                        <h3 class="text-lg font-semibold mb-2">Total Orders (MTD)</h3>
+                        <p class="text-3xl font-bold">254</p>
+                        <p class="text-sm mt-2 text-green-600"><i class="bi bi-arrow-up"></i> 5% from last month</p>
+                    </div>
+                    
+                    <div class="stat-card p-6 bg-white">
+                        <h3 class="text-lg font-semibold mb-2">Avg. Order Value</h3>
+                        <p class="text-3xl font-bold">$33.30</p>
+                        <p class="text-sm mt-2 text-green-600"><i class="bi bi-arrow-up"></i> 7% from last month</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="neu-box p-6">
+                        <h3 class="text-xl font-bold mb-4">Sales by Category</h3>
+                        <div class="h-64 flex items-center justify-center">
+                            <div class="w-full flex justify-around">
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#ff6b6b] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[65%] bg-black"></div>
+                                    </div>
+                                    <span>Bread</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#ff6b6b] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[85%] bg-black"></div>
+                                    </div>
+                                    <span>Pastries</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#ff6b6b] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[45%] bg-black"></div>
+                                    </div>
+                                    <span>Cakes</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#ff6b6b] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[35%] bg-black"></div>
+                                    </div>
+                                    <span>Desserts</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#ff6b6b] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[25%] bg-black"></div>
+                                    </div>
+                                    <span>Cookies</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="neu-box p-6">
+                        <h3 class="text-xl font-bold mb-4">Daily Sales (Last 7 Days)</h3>
+                        <div class="h-64 flex items-center justify-center">
+                            <div class="w-full flex justify-around">
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#4cc9f0] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[35%] bg-black"></div>
+                                    </div>
+                                    <span>Mon</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#4cc9f0] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[45%] bg-black"></div>
+                                    </div>
+                                    <span>Tue</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#4cc9f0] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[40%] bg-black"></div>
+                                    </div>
+                                    <span>Wed</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#4cc9f0] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[55%] bg-black"></div>
+                                    </div>
+                                    <span>Thu</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#4cc9f0] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[75%] bg-black"></div>
+                                    </div>
+                                    <span>Fri</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#4cc9f0] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[85%] bg-black"></div>
+                                    </div>
+                                    <span>Sat</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="h-52 w-8 bg-[#4cc9f0] relative mb-2">
+                                        <div class="absolute bottom-0 w-full h-[65%] bg-black"></div>
+                                    </div>
+                                    <span>Sun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="neu-box p-6">
+                    <h3 class="text-xl font-bold mb-4">Top Selling Products</h3>
+                    <table class="neu-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Units Sold</th>
+                                <th>Revenue</th>
+                                <th>% of Total Sales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Chocolate Croissant</td>
+                                <td>Pastries</td>
+                                <td>235</td>
+                                <td>$1,057.50</td>
+                                <td>12.5%</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Sourdough Bread</td>
+                                <td>Bread</td>
+                                <td>189</td>
+                                <td>$1,275.75</td>
+                                <td>15.1%</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Vanilla Cupcake</td>
+                                <td>Desserts</td>
+                                <td>157</td>
+                                <td>$510.25</td>
+                                <td>6.0%</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Cheese Danish</td>
+                                <td>Pastries</td>
+                                <td>142</td>
+                                <td>$603.50</td>
+                                <td>7.1%</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Baguette</td>
+                                <td>Bread</td>
+                                <td>131</td>
+                                <td>$517.45</td>
+                                <td>6.2%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Settings View -->
+            <div class="form-section" id="settings">
+                <h1 class="text-4xl font-bold mb-8">Settings</h1>
+                
+                <div class="grid grid-cols-1 gap-8">
+                    <div class="neu-box p-6">
+                        <h3 class="text-xl font-bold mb-4">Business Information</h3>
+                        <form class="grid grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">Business Name</label>
+                                <input type="text" class="neu-input w-full" value="Sweet Delights Bakery">
+                            </div>
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">Email</label>
+                                <input type="email" class="neu-input w-full" value="contact@sweetdelights.com">
+                            </div>
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">Phone</label>
+                                <input type="text" class="neu-input w-full" value="555-123-4567">
+                            </div>
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">Website</label>
+                                <input type="url" class="neu-input w-full" value="https://sweetdelights.com">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-lg font-semibold mb-2">Address</label>
+                                <input type="text" class="neu-input w-full" value="123 Main Street, Bakerville, BC 12345">
+                            </div>
+                            <div class="col-span-2 text-right">
+                                <button type="button" class="neu-btn neu-btn-green px-6 py-3">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="neu-box p-6">
+                        <h3 class="text-xl font-bold mb-4">User Settings</h3>
+                        <form class="grid grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">Name</label>
+                                <input type="text" class="neu-input w-full" value="Admin User">
+                            </div>
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">Email</label>
+                                <input type="email" class="neu-input w-full" value="admin@sweetdelights.com">
+                            </div>
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">Current Password</label>
+                                <input type="password" class="neu-input w-full" placeholder="Enter current password">
+                            </div>
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">New Password</label>
+                                <input type="password" class="neu-input w-full" placeholder="Enter new password">
+                            </div>
+                            <div class="col-span-2 text-right">
+                                <button type="button" class="neu-btn neu-btn-green px-6 py-3">Update Profile</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="neu-box p-6">
+                        <h3 class="text-xl font-bold mb-4">System Settings</h3>
+                        <form class="grid grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">Currency</label>
+                                <select class="neu-select w-full">
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                    <option value="CAD">CAD ($)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">Date Format</label>
+                                <select class="neu-select w-full">
+                                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">Time Format</label>
+                                <select class="neu-select w-full">
+                                    <option value="12">12-hour (AM/PM)</option>
+                                    <option value="24">24-hour</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-lg font-semibold mb-2">Default Tax Rate (%)</label>
+                                <input type="number" class="neu-input w-full" value="7.5" step="0.1">
+                            </div>
+                            <div class="col-span-2 text-right">
+                                <button type="button" class="neu-btn neu-btn-green px-6 py-3">Save Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab Navigation
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all menu items
+                document.querySelectorAll('.menu-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                
+                // Add active class to clicked menu item
+                this.classList.add('active');
+                
+                // Hide all sections
+                document.querySelectorAll('.form-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show the corresponding section
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+        
+        // Add Product Form Toggle
+        document.getElementById('addProductBtn').addEventListener('click', function() {
+            document.getElementById('addProductForm').style.display = 'block';
+        });
+        
+        document.getElementById('cancelAddProduct').addEventListener('click', function() {
+            document.getElementById('addProductForm').style.display = 'none';
+        });
+        
+        // Form Submission
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Form submitted!');
+            });
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
